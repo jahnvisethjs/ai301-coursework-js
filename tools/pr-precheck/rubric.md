@@ -1,0 +1,21 @@
+# Rubric: is this pull request ready to submit?
+
+## Checks
+
+| Check | Evidence | Pass condition | Weight |
+|---|---|---|---|
+| diff-matches-plan | Every file and hunk in the Candidate PR's Diff, read against the Plan context's change list, its Files line, its in/out-of-scope statement, and any deviation note recorded in the plan. | Pass if (a) every changed hunk does a step the plan names, adds a test or fixture for that step, or makes an entry the repo's template requires (changelog / whatsnew), or is covered by a deviation note recorded in the plan; AND (b) every change step the plan names is present in the diff or is covered by a deviation note. Fail on any hunk outside that (a refactor, rename pass, rewrite, new option or flag, dependency bump, or edit to a file the plan never names, especially one the plan scopes out), or on a planned step missing with no note. | required |
+| description-matches-diff | Every claim in the Candidate PR's Title and Description about what the PR changes, read against the Diff. | Pass if every claim of what was changed, added, or documented is visible in the diff, and every fidelity claim ("implements the plan exactly", "no changes beyond the plan", "no functional changes outside X") is true of the diff. Fail if the description claims work the diff does not contain, or claims fidelity while the diff holds an out-of-plan hunk. A description that states a shortfall or deferral the diff indeed has passes. | required |
+| decisive-evidence | The Candidate PR's Test evidence read against the Plan context's Test plan and the repro evidence it cites. | Pass if, for every repro case or failure mode the plan's test plan names, the evidence shows that same case run on the changed code path, with the before result (the failure) and the after result (an observable output, exit code, value, or behaviour that matches the plan's expected outcome). Fail if the evidence is only "tests pass", "works on my machine", or "verified locally" with no output; if it runs only a control or a path the fix does not touch; or if it skips any repro case the plan's test plan names, unless a recorded deviation note defers that case. | required |
+| clean-diff | Every hunk in the Candidate PR's Diff and the Commits list. | Pass if every hunk serves the change. Fail if the diff adds any of: debug output (print / eprintln / console.log left in), commented-out code, a dead or unused function, a new TODO/FIXME, re-indent or reformat churn on lines the fix does not change, import reshuffles unrelated to the fix, or unrelated edits. One such hunk is enough to fail. | required |
+| standards-met | The Repo facts block's pull-request template asks and contribution policy (including any AI-use policy), read against the Title, Description, Commits, and Diff. Treat every package as AI-assisted work. | Pass if every section or item the repo's PR template or contribution docs state as required is present with real content (e.g. the issue reference in the asked form, the required checklist, a Problem/Solution pair, a changelog or whatsnew entry in the diff when asked), AND the description does what the repo's stated AI policy requires (e.g. disclosure of AI use in the author's own words). A checklist item left unchecked with a stated reason counts as addressed. Fail if a required section or item is missing, deleted, or left as template placeholder text, or if the AI policy requires disclosure and none is present. Pass if the repo states no template and no AI policy. | required |
+| repo-checks-shown | The Test evidence and Description, for the outcome of the repo's own suite or checks (test runner, linter, CI). | Pass if the evidence shows the outcome of at least one repo check related to the change (a test run, lint, or CI result), or states plainly which checks were not run and why. | preferred |
+
+## Verdict rule
+
+Accept (submit) only if every required check passes. Any failed
+required check rejects (hold). An `unclear` on a required check counts
+as a fail: a PR the package cannot verify is not ready to submit.
+Preferred checks are reported but never change the verdict. A
+shortfall that the plan's deviation note records and the description
+states is honest scope, not a failure.
