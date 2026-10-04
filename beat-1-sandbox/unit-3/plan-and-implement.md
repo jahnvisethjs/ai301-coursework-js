@@ -55,7 +55,7 @@ expect to be unaffected by a one-test change and will confirm on the PR.
 
 **Branch**
 
-fix/64-partial-overlap-fixture
+[fix/64-partial-overlap-fixture](https://github.com/jahnvisethjs/pathreview-ai301-fa26-s3/tree/fix/64-partial-overlap-fixture)
 
 **Evidence**
 
