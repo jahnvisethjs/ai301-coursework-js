@@ -1,20 +1,20 @@
-# Contribution:  Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
+# Contribution: Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
 
 Path: `beat-2-contribution/contribution-story.md`
 
 This file is Assignment 5, and it is graded at the path above; a copy kept anywhere else in
-the repository is not read. **Keep every section header below under its exact name** — the
+the repository is not read. **Keep every section header below under its exact name** â€” the
 format criteria grade exactly that. Your course repo link is the whole submission: no tool
 files and no evidence uploads are part of Assignment 5.
 
 **Contribution Number:** [1]
 **Student:** Jahnvi Seth
 **GitHub Username:** jahnvisethjs
-**Issue:**[ [GitHub issue link]](https://github.com/dolev31/lasagna/issues/3)
+**Issue:** [dolev31/lasagna#3](https://github.com/dolev31/lasagna/issues/3)
 **Pull Request:** [GitHub PR link, once opened]
 
 One repository, built across units 5 to 8, telling the whole story of your real
-contribution. Fill it as you work, not at the end — the sections below ask for evidence that
+contribution. Fill it as you work, not at the end â€” the sections below ask for evidence that
 is far easier to write down as it happens than to reconstruct in the last weekend.
 
 Contribution Number stays `[1]` unless you make more than one contribution this term; it
@@ -56,12 +56,11 @@ one in the week it belongs to.
 
 **Unit 5: Built issue-scout, a GitHub-wide issue search that ranks for free and grades only the top 5 against my rubric**
 
- (2026-10-31 to 11-01) I wrote a search strategy of six `gh search issues` queries traced to my fit profile (RAG, agents, evaluation, Python libraries), with free ranking filters and a top-5 grading cap. Running the queries by hand exposed two silent bugs: quoted keywords returned zero results, and sorting by update date shrank the window to the last nine hours, so my 60-day filter never fired. My first live scan accepted an issue the owner had already handed to someone else and filled the top 5 with days-old solo repos, so I made maintainer-approved claims fail `unclaimed` (still 19/20 on the unit-1 eval) and added a query and ordering key for established LLM organisations. The second scan still let through mass-filed requests no maintainer had asked for, and when I hand-checked 17 issues, 16 had open PRs, claims, or maintainer refusals that the course site's list never showed, which is why I graded my two picks with the scout before claiming either.
+ (2026-10-31 to 11-01) I wrote a search strategy of six `gh search issues` queries traced to my fit profile (RAG, agents, evaluation, Python libraries), with free ranking filters and a top-5 grading cap. Running the queries by hand exposed two silent bugs: quoted keywords returned zero results, and sorting by update date shrankthe window to the last nine hours, so my 60-day filter never fired. My first live scan accepted an issue the owner had already handed to someone else and filled thetop 5 with days-old solo repos, so I made maintainer-approved claims fail `unclaimed` (still 19/20 on the unit-1 eval) and added a query and ordering key for established LLM organisations. The second scan still let through mass-filed requests no maintainer had asked for, and when I hand-checked 17 issues, 16 had open PRs, claims, or maintainer refusals that the course site's list never showed, which is why I graded my two picks with the scout before claiming either.
 
 **Unit 6: Installed the voice guard, a hook that checks every comment I post through Claude Code against my own voice guide, and wrote a repo memory file for lasagna**
 
-(2026-11-01) I merged my three carry-over voice guides into one canonical file, added Upstream rules for claims, questions, and pings, and installed the guard hook. The wiring test ran unblocked at first: on Windows, Claude called `gh` by its full path (`.../GitHub CLI/gh.exe`), and the guard only matched the bare word `gh`, so a real claim would have posted unchecked; I patched it to match `gh` or `gh.exe` by file name, and the next test was stopped as expected. The guard then stopped my lasagna#3 claim, because my own rule says a claim asks rather than announces, but the issue says to comment "I'm taking this" to claim it, so I added an exception to the rule (use a repo's claim phrase word for word, and still ask and name a first step), and the same draft passed. [Memory file: one sentence on what you put in CLAUDE.local.md and what it fixed or what fell short.]
-I then wrote a CLAUDE.local.md for my lasagna fork (CONTRIBUTING rules, the adapter subsystem, test commands, AI policy). Orienting for it turned up two problems: on Windows the repo's CLAUDE.md symlink checks out as a text file, so I kept the @AGENTS.md import to load the maintainers' rules, and a benchmark merged after my issue was filed already moved the count from 31 to 32, so my adapter makes it 33, not the 32 the issue says.
+(2026-11-01) I merged my three carry-over voice guides into one canonical file, added Upstream rules for claims, questions, and pings, and installed the guard hook,but the wiring test ran unblocked: on Windows Claude called `gh` by its full path (`.../GitHub CLI/gh.exe`) and the guard only matched the bare word `gh`, so I patched it to match by file name and the next test was stopped. The guard then stopped my own lasagna#3 claim, because my rule says a claim asks rather than announces while the issue says to comment "I'm taking this", so I added an exception (use a repo's claim phrase word for word, and still ask and name a first step) and the same draft passed. I then wrote a CLAUDE.local.md for my lasagna fork (CONTRIBUTING rules, the adapter subsystem, test commands, AI policy). Orienting for it turned up two problems: on Windows the repo's CLAUDE.md symlink checks out as a text file, so I kept the `@AGENTS.md` import to load the maintainers' rules, and a benchmark merged after my issue was filed already moved the count from 31 to 32, so my adapter makes it 33, not the 32 the issue says.
 
 **Unit 7: [one line on the tool work]**
 
@@ -77,11 +76,11 @@ drafted, what you did with the draft.]
 
 ## Why I Chose This Issue
 
-I searched with my issue-scout skill: six `gh search issues` queries built from my fit profile (RAG, agents, evaluation, Python libraries), ranked by free filters, with only the top 5 graded against my rubric. Scan 1 surfaced dolev31/lasagna#3, a MIRACL benchmark adapter that adds a multilingual retrieval benchmark (Swahili split) to a Python retrieval-evaluation toolkit. I graded it again in direct mode with my backup, Raftersecurity/rafter-cli#32 (a CI auto-label workflow), and both were accepted. After this week's scope patch I re-graded both: lasagna#3 still passed every check (active repo, unclaimed, one adapter file named by the owner, a CONTRIBUTING policy that welcomes AI-assisted work with disclosure), with a difficulty note of moderate, close to ambitious. rafter-cli#32 came back straightforward, but it is CI YAML in a TypeScript repo, so I unclaimed it.
+I searched with my issue-scout skill: six `gh search issues` queries built from my fit profile (RAG, agents, evaluation, Python libraries), ranked by free filters, with only the top 5 graded against my rubric. Scan 1 surfaced dolev31/lasagna#3, a MIRACL benchmark adapter that adds a multilingual retrieval benchmark (Swahili split) to a Python retrieval-evaluation toolkit. I graded it again in direct mode with my backup, Raftersecurity/rafter-cli#32 (a CI auto-label workflow), and both wereaccepted. After this week's scope patch I re-graded both: lasagna#3 still passed every check (active repo, unclaimed, one adapter file named by the owner, a CONTRIBUTING policy that welcomes AI-assisted work with disclosure), with a difficulty note of moderate, close to ambitious. rafter-cli#32 came back straightforward, but itis CI YAML in a TypeScript repo, so I unclaimed it.
 
 lasagna#3 fits what I want to get better at: retrieval evaluation (BM25, nDCG@10), Hugging Face datasets, and pytest, in a project where outside contributors are already getting PRs reviewed. I hope to learn how a benchmark harness stays reproducible when someone new adds to it, since the issue asks me to match the MIRACL paper's BM25 score and give commands a maintainer can rerun for the same numbers.
 
-The scout was not trustworthy out of the box. Hand-running its queries showed quoted keywords returned nothing and date-sorting hid every issue older than nine hours. Scan 1 also accepted an issue the owner had already given to someone else, so I made maintainer-approved claims fail `unclaimed` and re-ran the unit-1 eval (19/20). Its biggest limit showed up when I hand-checked 17 issues, including 13 from the course Issue Selection site: 16 were already taken by open PRs, recent claims, or maintainer refusals the site's list doesn't show. Its scope check had the opposite problem: it was strict about open design questions but blind to size. The difficulty note now says that lasagna#3 is a big job: an nDCG@10 comparison with the paper, a Docker Compose run, and a benchmark count to update in about ten files. I am taking that on knowingly.
+The scout was not trustworthy out of the box. Hand-running its queries showed quoted keywords returned nothing and date-sorting hid every issue older than nine hours. Scan 1 also accepted an issue the owner had already given to someone else, so I made maintainer-approved claims fail `unclaimed` and re-ran the unit-1 eval (19/20). Its biggest limit showed up when I hand-checked 17 issues, including 13 from the course Issue Selection site: 16 were already taken by open PRs, recent claims, ormaintainer refusals the site's list doesn't show. Its scope check had the opposite problem: it was strict about open design questions but blind to size. The difficulty note now says that lasagna#3 is a big job: an nDCG@10 comparison with the paper, a Docker Compose run, and a benchmark count to update in about ten files. I am taking that on knowingly.
 
 Claim: [my claim comment](https://github.com/dolev31/lasagna/issues/3#issuecomment-6562566317) (posted 2026-11-01; the issue asks for a draft PR within two weeks)
 
