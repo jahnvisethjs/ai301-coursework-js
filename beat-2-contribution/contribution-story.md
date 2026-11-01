@@ -8,10 +8,9 @@ format criteria grade exactly that. Your course repo link is the whole submissio
 files and no evidence uploads are part of Assignment 5.
 
 **Contribution Number:** [1]
-**Student:** [Student name]
-**GitHub Username:** [your GitHub username, exactly as it appears on your profile - no @, no
-profile URL. Your comments upstream are identified by this name.]
-**Issue:** [GitHub issue link]
+**Student:** Jahnvi Seth
+**GitHub Username:** jahnvisethjs
+**Issue:**[ [GitHub issue link]](https://github.com/dolev31/lasagna/issues/3)
 **Pull Request:** [GitHub PR link, once opened]
 
 One repository, built across units 5 to 8, telling the whole story of your real
@@ -79,24 +78,18 @@ drafted, what you did with the draft.]
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs in your own words: how you searched, what your scan
-surfaced, what your scout's verdict said, why this issue fits your
-profile, and what you hope to learn. If your scout's verdict on it
-was reject and you chose it anyway, say so here and say why; choosing
-against your own tool silently is what loses points. Close with an
-honest read of the tool itself: where the scout fell short on a real
-wild search and what you changed or would change, or what convinced
-you it held up. **Record the link to your claim comment in this section too.**
-Not claimed yet? Write `claim pending` and today's date where the link goes,
-and add the link the moment your claim lands.]
+I searched with my issue-scout skill: six `gh search issues` queries built from my fit profile (RAG, agents, evaluation, Python libraries), ranked by free filters, with only the top 5 graded against my rubric. Scan 1 surfaced dolev31/lasagna#3, a MIRACL benchmark adapter that adds a multilingual retrieval benchmark (Swahili split) to a Python retrieval-evaluation toolkit, and the scout accepted it on every check: active repo, unclaimed, one bounded adapter with file-by-file steps from the owner, and a CONTRIBUTING policy that welcomes AI-assisted work with disclosure. It fits what I want to get better at: retrieval evaluation (BM25, nDCG@10), Hugging Face datasets, and pytest, in a project where outside contributors are already getting PRs reviewed. I hope to learn how a benchmark harness stays reproducible when someone new adds to it.
+
+The scout was not trustworthy out of the box. Hand-running its queries showed quoted keywords returned nothing and date-sorting hid every issue older than nine hours. Scan 1 also accepted an issue the owner had already given to someone else, so I made maintainer-approved claims fail `unclaimed` and re-ran the unit-1 eval (19/20). Its biggest limit showed up when I hand-checked 17 issues, including 13 from the course Issue Selection site: 16 were already taken by open PRs, recent claims, or maintainer refusals the site's list doesn't show. And it still passes issues that are bounded but not small: lasagna#3 means reproducing the paper's BM25 score and touching about ten files, which I am taking on knowingly.
+
+Claim: claim pending (2026-11-01)
 
 **Toolkit**
 
-- Tool: issue-scout (your scout: your search strategy, your rubric),
-  and how you used it
-- What it produced: [the scan and its verdict on this issue, described]
-- Difficulties: [where it fell short, or "none met" if none did]
-- What changed: [what you patched or would update, or "nothing"]
+- Tool: issue-scout (my search strategy + rubric), run as a full scan twice and in direct mode on my two final picks
+- What it produced: scan 1 graded 5 and accepted all 5, including lasagna#3; scan 2 accepted 2 llama_index issues and rejected 3 (open PRs, unsettled design); the direct grade accepted both lasagna#3 and rafter-cli#32
+- Difficulties: two silent query bugs (quotes, sort order); it accepted a claimed issue and mass-filed outsider requests; ranking cannot see linked PRs or star counts; `maintainer-responsive` is unclear on brand-new repos
+- What changed: unquoted keywords, dropped `--sort updated`, `unclaimed` now counts maintainer-approved claims (eval 19/20), added an established-org query and ordering key; logged but not yet patched: a size clause in `scoped-for-newcomer` and a maintainer-endorsement requirement
 
 ---
 
