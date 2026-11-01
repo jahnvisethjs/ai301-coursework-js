@@ -61,6 +61,7 @@ one in the week it belongs to.
 **Unit 6: Installed the voice guard, a hook that checks every comment I post through Claude Code against my own voice guide, and wrote a repo memory file for lasagna**
 
 (2026-11-01) I merged my three carry-over voice guides into one canonical file, added Upstream rules for claims, questions, and pings, and installed the guard hook. The wiring test ran unblocked at first: on Windows, Claude called `gh` by its full path (`.../GitHub CLI/gh.exe`), and the guard only matched the bare word `gh`, so a real claim would have posted unchecked; I patched it to match `gh` or `gh.exe` by file name, and the next test was stopped as expected. The guard then stopped my lasagna#3 claim, because my own rule says a claim asks rather than announces, but the issue says to comment "I'm taking this" to claim it, so I added an exception to the rule (use a repo's claim phrase word for word, and still ask and name a first step), and the same draft passed. [Memory file: one sentence on what you put in CLAUDE.local.md and what it fixed or what fell short.]
+I then wrote a CLAUDE.local.md for my lasagna fork (CONTRIBUTING rules, the adapter subsystem, test commands, AI policy). Orienting for it turned up two problems: on Windows the repo's CLAUDE.md symlink checks out as a text file, so I kept the @AGENTS.md import to load the maintainers' rules, and a benchmark merged after my issue was filed already moved the count from 31 to 32, so my adapter makes it 33, not the 32 the issue says.
 
 **Unit 7: [one line on the tool work]**
 
