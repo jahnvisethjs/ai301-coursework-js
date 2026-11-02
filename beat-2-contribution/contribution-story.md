@@ -60,7 +60,7 @@ one in the week it belongs to.
 
 **Unit 6: Installed the voice guard, a hook that checks every comment I post through Claude Code against my own voice guide, and wrote a repo memory file for lasagna**
 
-(2026-11-01) I merged my three carry-over voice guides into one canonical file, added Upstream rules for claims, questions, and pings, and installed the guard hook,but the wiring test ran unblocked: on Windows Claude called `gh` by its full path (`.../GitHub CLI/gh.exe`) and the guard only matched the bare word `gh`, so I patched it to match by file name and the next test was stopped. The guard then stopped my own lasagna#3 claim, because my rule says a claim asks rather than announces while the issue says to comment "I'm taking this", so I added an exception (use a repo's claim phrase word for word, and still ask and name a first step) and the same draft passed. I then wrote a CLAUDE.local.md for my lasagna fork (CONTRIBUTING rules, the adapter subsystem, test commands, AI policy). Orienting for it turned up two problems: on Windows the repo's CLAUDE.md symlink checks out as a text file, so I kept the `@AGENTS.md` import to load the maintainers' rules, and a benchmark merged after my issue was filed already moved the count from 31 to 32, so my adapter makes it 33, not the 32 the issue says.
+(2026-11-01) I merged my three carry-over voice guides into one canonical file, added Upstream rules for claims, questions, and pings, and installed the guard hook, but the wiring test ran unblocked: on Windows Claude called `gh` by its full path (`.../GitHub CLI/gh.exe`) and the guard only matched the bare word `gh`, so I patched it to match by file name and the next test was stopped. The guard then stopped my own lasagna#3 claim, because my rule says a claim asks rather than announces while the issue says to comment "I'm taking this", so I added an exception (use a repo's claim phrase word for word, and still ask and name a first step) and the same draft passed. I then wrote a CLAUDE.local.md for my lasagna fork (CONTRIBUTING rules, the adapter subsystem, test commands, AI policy). Orienting for it turned up two problems: on Windows the repo's CLAUDE.md symlink checks out as a text file, so I kept the `@AGENTS.md` import to load the maintainers' rules, and a benchmark merged after my issue was filed already moved the count from 31 to 32, so my adapter makes it 33, not the 32 the issue says.
 
 **Unit 7: [one line on the tool work]**
 
@@ -96,89 +96,100 @@ Claim: [my claim comment](https://github.com/dolev31/lasagna/issues/3#issuecomme
 ## Understanding the Issue
 
 **Problem Description**
-
-[In your own words, what is broken or missing?]
+Lasagna is a framework for testing RAG pipelines fairly: you swap one stage, hold the rest fixed, and score the change on a benchmark. All 32 of its public benchmarks are in English, which its paper names as a limitation, so nobody can measure how a retriever does in another language. MIRACL (arXiv 2210.09984) is a retrieval benchmark with relevance judged by native speakers in 18 languages. The issue asks for an adapter that loads its Swahili split as `miracl/sw`.
 
 **Expected Behavior**
 
-[What should happen?]
+`lasagna benchmark list` shows `miracl/sw` with its license and paper, and `lasagna benchmark run miracl/sw --profile speed` runs on a sample. Every qrels doc ID exists in the corpus at a pinned dataset revision, BM25's nDCG@10 on the dev split lands near the paper's figure, and the docs say 33 benchmarks.
 
 **Current Behavior**
 
-[What actually happens?]
+
+On main (`10f9c25`), `lasagna benchmark list` ends with "32 benchmarks, plus smoke" and has no MIRACL entry, and `lasagna benchmark run miracl/sw --profile speed` exits with `Error: Unknown benchmark 'miracl/sw'`. The issue itself was out of date: it said the count was 31, but `2wikimultihopqa` had already raised it to 32. The maintainer confirmed this and updated the issue on 2026-11-01.
 
 **Affected Components**
-
-[Which parts of the codebase are involved?]
+- New: `src/lasagna/knowledge_evaluation_sdk/benchmarks/adapters/miracl.py` (the adapter) and `tests/test_miracl.py` (an offline fixture test).
+- `benchmarks/adapters/__init__.py`: one import and one call in `register_all`.
+- Used as is: `BaseBenchmarkAdapter` (`_base.py`), the registry (`_registry.py`), and the run path that calls `load()` (`runner.py:557`) and `load_corpus()` (`experiment.py:3775`) and checks qrels IDs against the corpus (`experiment.py:3833`).
+- Regenerated or updated: `research/DATASETS.md`, the catalog doc, the 7 lines that state the count of 32, and `CHANGELOG.md`.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
-
+- Tool: Claude Code, used to trace how lasagna runs a benchmark from the CLI to the score, and to list the MIRACL files through the Hugging Face Hub API
+- What it produced: the run path with file and line numbers (registry lookup, `load()`, `load_corpus()`, the qrels-in-corpus check); the finding that Swahili has public qrels only for dev and train (test-a and test-b have queries without judgments); the pinned commits for both data repos
+- Difficulties: the issue's count (31) was stale, and the registry lists 33 names while the docs say 32, which was confusing until the `benchmark list` footer showed `smoke` is a wiring check that isn't counted
+- What changed: I plan to evaluate on dev, the split the paper reports BM25 on, and the PR raises the count from 32 to 33, not to 32 as the issue first said
 ---
 
 ## Reproduction Process
 
 **Environment Setup**
 
-[What a stranger would need to stand this up: your operating system,
-the relevant versions (language, runtime, package manager, the project
-itself), and how you set the project up. Then the challenges you faced
-and how you solved them, or that none came up.]
+Windows 11 Home (10.0.26300) with PowerShell 5.1, Python 3.11.0, pip 26.2.2, and lasagna 0.2.0 installed editable from `dolev31/lasagna` main @ `10f9c25` (2026-11-01). I cloned my fork, made a venv, and ran `pip install -e ".[eval]" --group dev` (CONTRIBUTING.md's pip route).
+ The repo's `CLAUDE.md` is a symlink, which on Windows checks out as a text file that just says "AGENTS.md", so my local notes import AGENTS.md directly. My first install skipped `--group dev`, so pytest and ruff were missing until I reinstalled with it. On Windows, the full test suite on clean main has 46 failures (milvus-lite isn't available on Windows, `\` vs `/` paths, a POSIX-only `fcntl` import), none of them in benchmark code, so I'll run the full suite on Linux in a Codespace.
+
 
 **Steps to Reproduce**
-
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. `git clone https://github.com/dolev31/lasagna.git; cd lasagna; git checkout 10f9c25`
+2. `python -m venv .venv; .venv\Scripts\python -X utf8 -m pip install -e ".[eval]" --group dev`
+3. `.venv\Scripts\lasagna benchmark list`: 32 benchmarks, none of them MIRACL, ending with "32 benchmarks, plus smoke (a wiring check, not a result)"
+4. `.venv\Scripts\lasagna benchmark run miracl/sw --profile speed`: exits 1 with `Error: Unknown benchmark 'miracl/sw'.`
+5. `git grep -n "32 benchmarks\|32 public benchmarks\|thirty-two"`: 7 lines state the count the adapter will raise to 33
 
 **Reproduction Evidence**
 
 - **Commit showing reproduction:** [link to commit in your fork]
 - **Screenshots/logs:** [if applicable]
-- **My findings:** [what you discovered during reproduction; an
-  honest, evidenced cannot-reproduce that led you to re-pick or ask
-  the maintainer belongs here and costs you nothing]
-
+- **My findings:** reproduced: `miracl/sw` doesn't exist on main and lasagna rejects it by name. The count was already 32, not 31, so the adapter makes it 33 (the maintainer confirmed and updated the issue). The registry holds 33 names because `smoke` isn't counted. On Hugging Face, `miracl/miracl` @ `5be20db` has Swahili topics for dev, train, test-a and test-b but qrels only for dev and train, and `miracl/miracl-corpus` @ `d921ec7` has the corpus as one 10.2 MB `docs-0.jsonl.gz`. Not yet checked: whether every qrels doc ID is in the corpus; that is the data report I promised on the issue for Nov 5.
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
-
+- Tool: repro-check (my unit-6 rubric), run with `claude -p` on my posted claim and this repro report
+- What it produced: accept, with all five required checks passing (environment, steps, behavior-match, honesty, conventions) and the preferred claim-scope check passing; it verified the error text and the "plus smoke" footer against `cli.py` at `10f9c25`
+- Difficulties: in `claude -p` it couldn't call `gh`, so it read the issue facts from my notes instead of the live thread; it also flagged that "the adapter evaluates on dev" read as a settled decision before the maintainer had a say
+- What changed: I reworded it to "I plan to evaluate on dev" and added that this run was Windows-only; in unit 6 I had already fixed the rubric's claim-scope check to say "no fix and no fix date (a date for reporting findings is fine)", since my claim promises findings by Nov 5
 ---
+
+## Solution Approach
 
 ## Solution Approach
 
 **Analysis**
 
-[Your analysis of the root cause: what is causing the issue, traced
-to the files and functions involved.]
+Nothing is broken; the benchmark was never added. `lasagna benchmark run miracl/sw` looks the name up with `BenchmarkRegistry.get()` (`benchmarks/_registry.py:164`). The registry fills itself from `register_all()` in `benchmarks/adapters/__init__.py` (`_registry.py:81-83`), and no adapter there registers `miracl/sw`, so the CLI prints `Unknown benchmark 'miracl/sw'` (`cli.py:505`).
+
+Once a name is registered, the run path needs two things from its adapter. The runner calls `adapter.load()` (`runner.py:557`) for `BenchmarkSample`s whose `expected_docs` carry the qrels (`_base.py:60-78`). The experiment then calls `adapter.load_corpus()` (`experiment.py:3775`), and before it searches, it checks every qrels doc ID against the corpus: it warns when some are missing and aborts when more than half are (`experiment.py:3833-3849`). So the adapter has to read MIRACL's topics, qrels and corpus files, and its qrels doc IDs must match its corpus doc IDs exactly.
+
+The count is the second part. `lasagna benchmark list` ends with "32 benchmarks, plus smoke", and `git grep -n "32 benchmarks\|32 public benchmarks\|thirty-two"` finds 7 lines that state it. `test_readme_counts_match_the_registry.py` and `test_catalog_doc_current.py` fail until the docs match the registry.
 
 **Proposed Solution**
 
-[High-level description of your fix approach, and what you are
-deliberately NOT changing.]
+Add one adapter, `MiraclAdapter`, in `adapters/miracl.py`, following `adapters/twowikimultihopqa.py` (merged in #24): download files with `hf_hub_download` at pinned revisions, implement `info`, `load` and `load_corpus`, and end with `register(registry)`.
+
+- `info()`: name `miracl/sw`, `BenchmarkEvalMode.RETRIEVAL`, license Apache-2.0, paper `arxiv:2210.09984`. `num_queries` and `num_documents` come from the downloaded data, never from an estimate.
+- `load()`: reads `topics.miracl-v1.0-sw-<split>.tsv` and `qrels.miracl-v1.0-sw-<split>.tsv` from `miracl/miracl`. The splits are `dev` (the default, and the split the paper reports BM25 on) and `train`; test-a and test-b have no public qrels. Each sample keeps MIRACL's query ID. `expected_docs` keeps only judgments with relevance above 0, and a query with no relevant passage is dropped, as `_convert_beir_with_qrels` does for BEIR (`datasets.py:654-661`). `n_samples` and `seed` pick a reproducible subset.
+- `load_corpus()`: reads `miracl-corpus-v1.0-sw/docs-0.jsonl.gz` from `miracl/miracl-corpus` with `gzip` and `json`, and returns `{docid: title + "\n\n" + text}`. It respects `max_docs` (0 means all) and sets `corpus_truncated` when it stops early.
+- Pinning: `hf_revision` holds the `miracl/miracl` commit, and the corpus commit gets its own attribute, because the data lives in two repos. I'm asking the maintainer whether they want it recorded differently.
+
+What I am not changing: `BaseBenchmarkAdapter`, the registry, the qrels check in `experiment.py`, any other adapter, and any other MIRACL language. The adapter registers only `sw`; each further language is its own PR, as the maintainer said. Count lines that the issue's `git grep` and the two count tests don't point at stay as they are.
 
 **Implementation Plan**
 
-1. [Modify file X to do Y]
-2. [Add or change Z]
-3. [Update tests]
+1. Before code (the Nov 5 data report): download the Swahili topics, qrels and corpus at the pinned commits, check that every dev qrels doc ID exists in the corpus, count the queries and passages, and post the result on the issue.
+2. Branch `feat/3-miracl-sw` from `main`.
+3. Add `adapters/miracl.py` as described above, with a module docstring.
+4. In `adapters/__init__.py` `register_all`, add `from .miracl import register as register_miracl` and call it.
+5. Add `tests/test_miracl.py` with a tiny offline fixture (a few TSV lines and a small `.jsonl.gz`), monkeypatching `hf_hub_download` as `tests/test_twowikimultihopqa.py` does. It checks that the metadata loads without a download, that relevance-0 judgments are dropped, that every expected doc is in the corpus, that each download asks for the pinned revision, and that `max_docs` truncates and sets the flag. I'll confirm each test fails without the adapter.
+6. Regenerate `DATASETS.md` (`lasagna benchmark licenses -o src/lasagna/knowledge_evaluation_sdk/research/DATASETS.md`) and the catalog (`python scripts/gen_catalog_doc.py`).
+7. Raise the count from 32 to 33 in every line the `git grep` finds, until the two count tests pass.
+8. Add a `CHANGELOG.md` line under Unreleased.
+9. Check: `lasagna benchmark list` shows `miracl/sw`; `lasagna benchmark run miracl/sw --profile speed` runs on a sample; the manifest checks pass; the full suite passes on Linux (Codespace).
+10. Paper check: run `bm25` on the full dev split (a sweep with `{name: bm25, retriever: bm25}` and `tracks: [retrieval]`, `n_runs: 1`), and give my nDCG@10 beside the paper's (table and page), with any gap explained. Show one real query with its judged passages and the top five `bm25` results, plus the exact commands and seed.
+11. Run it in the Docker Compose stack built from the branch (`IMAGE_EXTRAS=eval`), and keep the commands, `docker compose ps` image lines and output for the PR.
 
-[Record deviations here as they happen: what changed mid-build and
-why. A recorded deviation is honest work; silent drift is not.]
-
-**Toolkit**
-
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: plan-check (my unit-3 rubric), run with `claude -p` on `plan.md` and a draft plan comment `plan-comment.md` that I kept off the issue
+- What it produced: accept on the first run: grounded-cause, bounded-scope, executable, decisive-test and thread-and-policy all passed, and so did the preferred risks-named check (the two-repo revision pin as a question for the maintainer, the qrels/corpus ID match left to the Nov 5 report)
+- Difficulties: it couldn't read the live thread in `claude -p`, so it used my notes; its evidence guide expects a file named `comment.md` and `Cause:` / `Test:` / `Risks` headings, while the course template uses `plan-comment.md`, Analysis and Implementation Plan, so it had to infer where things were; my voice guide caught that the comment didn't say the ID match was still unchecked
+- What changed: I added that half sentence to the comment; the evidence-guide naming mismatch is logged, not patched yet
 
 ---
 
