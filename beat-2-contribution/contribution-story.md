@@ -56,7 +56,7 @@ one in the week it belongs to.
 
 **Unit 5: Built issue-scout, a GitHub-wide issue search that ranks for free and grades only the top 5 against my rubric**
 
- (2026-10-31 to 11-01) I wrote a search strategy of six `gh search issues` queries traced to my fit profile (RAG, agents, evaluation, Python libraries), with free ranking filters and a top-5 grading cap. Running the queries by hand exposed two silent bugs: quoted keywords returned zero results, and sorting by update date shrankthe window to the last nine hours, so my 60-day filter never fired. My first live scan accepted an issue the owner had already handed to someone else and filled thetop 5 with days-old solo repos, so I made maintainer-approved claims fail `unclaimed` (still 19/20 on the unit-1 eval) and added a query and ordering key for established LLM organisations. The second scan still let through mass-filed requests no maintainer had asked for, and when I hand-checked 17 issues, 16 had open PRs, claims, or maintainer refusals that the course site's list never showed, which is why I graded my two picks with the scout before claiming either.
+ (2026-10-31 to 11-01) I wrote a search strategy of six `gh search issues` queries traced to my fit profile (RAG, agents, evaluation, Python libraries), with free ranking filters and a top-5 grading cap. Running the queries by hand exposed two silent bugs: quoted keywords returned zero results, and sorting by update date shrank the window to the last nine hours, so my 60-day filter never fired. My first live scan accepted an issue the owner had already handed to someone else and filled the top 5 with days-old solo repos, so I made maintainer-approved claims fail `unclaimed` (still 19/20 on the unit-1 eval) and added a query and ordering key for established LLM organisations. The second scan still let through mass-filed requests no maintainer had asked for, and when I hand-checked 17 issues, 16 had open PRs, claims, or maintainer refusals that the course site's list never showed, which is why I graded my two picks with the scout before claiming either.
 
 **Unit 6: Installed the voice guard, a hook that checks every comment I post through Claude Code against my own voice guide, and wrote a repo memory file for lasagna**
 
@@ -76,11 +76,11 @@ drafted, what you did with the draft.]
 
 ## Why I Chose This Issue
 
-I searched with my issue-scout skill: six `gh search issues` queries built from my fit profile (RAG, agents, evaluation, Python libraries), ranked by free filters, with only the top 5 graded against my rubric. Scan 1 surfaced dolev31/lasagna#3, a MIRACL benchmark adapter that adds a multilingual retrieval benchmark (Swahili split) to a Python retrieval-evaluation toolkit. I graded it again in direct mode with my backup, Raftersecurity/rafter-cli#32 (a CI auto-label workflow), and both wereaccepted. After this week's scope patch I re-graded both: lasagna#3 still passed every check (active repo, unclaimed, one adapter file named by the owner, a CONTRIBUTING policy that welcomes AI-assisted work with disclosure), with a difficulty note of moderate, close to ambitious. rafter-cli#32 came back straightforward, but itis CI YAML in a TypeScript repo, so I unclaimed it.
+I searched with my issue-scout skill: six `gh search issues` queries built from my fit profile (RAG, agents, evaluation, Python libraries), ranked by free filters, with only the top 5 graded against my rubric. Scan 1 surfaced dolev31/lasagna#3, a MIRACL benchmark adapter that adds a multilingual retrieval benchmark (Swahili split) to a Python retrieval-evaluation toolkit. I graded it again in direct mode with my backup, Raftersecurity/rafter-cli#32 (a CI auto-label workflow), and both were accepted. After this week's scope patch I re-graded both: lasagna#3 still passed every check (active repo, unclaimed, one adapter file named by the owner, a CONTRIBUTING policy that welcomes AI-assisted work with disclosure), with a difficulty note of moderate, close to ambitious. rafter-cli#32 came back straightforward, but it is CI YAML in a TypeScript repo, so I unclaimed it.
 
 lasagna#3 fits what I want to get better at: retrieval evaluation (BM25, nDCG@10), Hugging Face datasets, and pytest, in a project where outside contributors are already getting PRs reviewed. I hope to learn how a benchmark harness stays reproducible when someone new adds to it, since the issue asks me to match the MIRACL paper's BM25 score and give commands a maintainer can rerun for the same numbers.
 
-The scout was not trustworthy out of the box. Hand-running its queries showed quoted keywords returned nothing and date-sorting hid every issue older than nine hours. Scan 1 also accepted an issue the owner had already given to someone else, so I made maintainer-approved claims fail `unclaimed` and re-ran the unit-1 eval (19/20). Its biggest limit showed up when I hand-checked 17 issues, including 13 from the course Issue Selection site: 16 were already taken by open PRs, recent claims, ormaintainer refusals the site's list doesn't show. Its scope check had the opposite problem: it was strict about open design questions but blind to size. The difficulty note now says that lasagna#3 is a big job: an nDCG@10 comparison with the paper, a Docker Compose run, and a benchmark count to update in about ten files. I am taking that on knowingly.
+The scout was not trustworthy out of the box. Hand-running its queries showed quoted keywords returned nothing and date-sorting hid every issue older than nine hours. Scan 1 also accepted an issue the owner had already given to someone else, so I made maintainer-approved claims fail `unclaimed` and re-ran the unit-1 eval (19/20). Its biggest limit showed up when I hand-checked 17 issues, including 13 from the course Issue Selection site: 16 were already taken by open PRs, recent claims, or maintainer refusals the site's list doesn't show. Its scope check had the opposite problem: it was strict about open design questions but blind to size. The difficulty note now says that lasagna#3 is a big job: an nDCG@10 comparison with the paper, a Docker Compose run, and a benchmark count to update in about ten files. I am taking that on knowingly.
 
 Claim: [my claim comment](https://github.com/dolev31/lasagna/issues/3#issuecomment-6562566317) (posted 2026-11-01; the issue asks for a draft PR within two weeks)
 
@@ -96,6 +96,7 @@ Claim: [my claim comment](https://github.com/dolev31/lasagna/issues/3#issuecomme
 ## Understanding the Issue
 
 **Problem Description**
+
 Lasagna is a framework for testing RAG pipelines fairly: you swap one stage, hold the rest fixed, and score the change on a benchmark. All 32 of its public benchmarks are in English, which its paper names as a limitation, so nobody can measure how a retriever does in another language. MIRACL (arXiv 2210.09984) is a retrieval benchmark with relevance judged by native speakers in 18 languages. The issue asks for an adapter that loads its Swahili split as `miracl/sw`.
 
 **Expected Behavior**
@@ -119,6 +120,7 @@ On main (`10f9c25`), `lasagna benchmark list` ends with "32 benchmarks, plus smo
 - What it produced: the run path with file and line numbers (registry lookup, `load()`, `load_corpus()`, the qrels-in-corpus check); the finding that Swahili has public qrels only for dev and train (test-a and test-b have queries without judgments); the pinned commits for both data repos
 - Difficulties: the issue's count (31) was stale, and the registry lists 33 names while the docs say 32, which was confusing until the `benchmark list` footer showed `smoke` is a wiring check that isn't counted
 - What changed: I plan to evaluate on dev, the split the paper reports BM25 on, and the PR raises the count from 32 to 33, not to 32 as the issue first said
+
 ---
 
 ## Reproduction Process
@@ -138,18 +140,18 @@ Windows 11 Home (10.0.26300) with PowerShell 5.1, Python 3.11.0, pip 26.2.2, and
 
 **Reproduction Evidence**
 
-- **Commit showing reproduction:** [link to commit in your fork]
-- **Screenshots/logs:** [if applicable]
-- **My findings:** reproduced: `miracl/sw` doesn't exist on main and lasagna rejects it by name. The count was already 32, not 31, so the adapter makes it 33 (the maintainer confirmed and updated the issue). The registry holds 33 names because `smoke` isn't counted. On Hugging Face, `miracl/miracl` @ `5be20db` has Swahili topics for dev, train, test-a and test-b but qrels only for dev and train, and `miracl/miracl-corpus` @ `d921ec7` has the corpus as one 10.2 MB `docs-0.jsonl.gz`. Not yet checked: whether every qrels doc ID is in the corpus; that is the data report I promised on the issue for Nov 5.
+- **Commit showing reproduction:** none. This is a missing feature, so reproducing it needs no code change; the run is against upstream main @ `10f9c25`.
+- **Screenshots/logs:** the output in steps 3-5 above.
+- **My findings:** reproduced: `miracl/sw` doesn't exist on main and lasagna rejects it by name. The count was already 32, not 31, so the adapter makes it 33 (the maintainer confirmed and updated the issue). The registry holds 33 names because `smoke` isn't counted. On Hugging Face, `miracl/miracl` @ `5be20db` has Swahili topics for dev, train, test-a and test-b but qrels only for dev and train, and `miracl/miracl-corpus` @ `d921ec7` has the corpus as one 10.2 MB `docs-0.jsonl.gz`. On 2026-11-02 I checked the data at those commits: all 3,514 judged doc IDs in dev and all 5,714 in train are in the corpus (131,924 passages, no duplicate IDs), and every query has at least one relevant passage. I posted that report on the issue on [Nov 3](https://github.com/dolev31/lasagna/issues/3#issuecomment-6597190664).
+
 **Toolkit**
 
 - Tool: repro-check (my unit-6 rubric), run with `claude -p` on my posted claim and this repro report
 - What it produced: accept, with all five required checks passing (environment, steps, behavior-match, honesty, conventions) and the preferred claim-scope check passing; it verified the error text and the "plus smoke" footer against `cli.py` at `10f9c25`
 - Difficulties: in `claude -p` it couldn't call `gh`, so it read the issue facts from my notes instead of the live thread; it also flagged that "the adapter evaluates on dev" read as a settled decision before the maintainer had a say
 - What changed: I reworded it to "I plan to evaluate on dev" and added that this run was Windows-only; in unit 6 I had already fixed the rubric's claim-scope check to say "no fix and no fix date (a date for reporting findings is fine)", since my claim promises findings by Nov 5
----
 
-## Solution Approach
+---
 
 ## Solution Approach
 
@@ -186,6 +188,8 @@ What I am not changing: `BaseBenchmarkAdapter`, the registry, the qrels check in
 10. Paper check: run `bm25` on the full dev split (a sweep with `{name: bm25, retriever: bm25}` and `tracks: [retrieval]`, `n_runs: 1`), and give my nDCG@10 beside the paper's (table and page), with any gap explained. Show one real query with its judged passages and the top five `bm25` results, plus the exact commands and seed.
 11. Run it in the Docker Compose stack built from the branch (`IMAGE_EXTRAS=eval`), and keep the commands, `docker compose ps` image lines and output for the PR.
 
+**Toolkit**
+
 - Tool: plan-check (my unit-3 rubric), run with `claude -p` on `plan.md` and a draft plan comment `plan-comment.md` that I kept off the issue
 - What it produced: accept on the first run: grounded-cause, bounded-scope, executable, decisive-test and thread-and-policy all passed, and so did the preferred risks-named check (the two-repo revision pin as a question for the maintainer, the qrels/corpus ID match left to the Nov 5 report)
 - Difficulties: it couldn't read the live thread in `claude -p`, so it used my notes; its evidence guide expects a file named `comment.md` and `Cause:` / `Test:` / `Risks` headings, while the course template uses `plan-comment.md`, Analysis and Implementation Plan, so it had to infer where things were; my voice guide caught that the comment didn't say the ID match was still unchecked
@@ -214,13 +218,13 @@ observable named is not a strategy.]
 [A running log, added to as you work. Date each entry. What you
 built, decisions you made when you made them, wrong turns included.]
 
-**[Date]**
+**2026-11-01**
 
-[Entry]
+Set up the ship-gate manifest before writing any code. My venv was missing pytest and ruff because my unit-6 install skipped `--group dev`, so I reinstalled with it (ruff 0.14.7, the version CI pins). The full suite on clean main on Windows took 13 minutes and had 46 failures (milvus-lite isn't available on Windows, `\` vs `/` paths, a POSIX-only `fcntl` import), none in benchmark code. So my manifest gates on lint, format and the adapter, registry and count tests (144 pass in 34 s), and records the full suite as excluded, with the reason and date. I'll run the full suite on Linux in a Codespace for the PR.
 
-**[Date]**
+**2026-11-02**
 
-[Entry]
+Ran the data check I promised on the issue before writing the adapter. At the pinned commits, every judged doc ID in the Swahili dev qrels (3,514) and train qrels (5,714) is in the corpus (131,924 passages, no duplicate IDs, no empty text). No (query, doc) pair is judged twice, and every query has at least one relevant passage. test-a and test-b have no qrels, so I chose `dev` as the default split. My first script stored judgments in a dict, which would have hidden a pair judged twice with different labels, so I added a separate check for that. I ran the shortened script exactly as it appears in the comment before posting it, and posted the [report](https://github.com/dolev31/lasagna/issues/3#issuecomment-6597190664) on Nov 3 with one question: how to record two dataset commits when `hf_revision` holds one.
 
 **Toolkit**
 
