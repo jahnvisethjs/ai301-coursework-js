@@ -1,9 +1,9 @@
-[# Contribution: Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
+# Contribution: Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
 
 Path: `beat-2-contribution/contribution-story.md`
 
 This file is Assignment 5, and it is graded at the path above; a copy kept anywhere else in
-the repository is not read. **Keep every section header below under its exact name**” the
+the repository is not read. **Keep every section header below under its exact name**: the
 format criteria grade exactly that. Your course repo link is the whole submission: no tool
 files and no evidence uploads are part of Assignment 5.
 
@@ -14,7 +14,7 @@ files and no evidence uploads are part of Assignment 5.
 **Pull Request:** [dolev31/lasagna#73](https://github.com/dolev31/lasagna/pull/73) (draft)
 
 One repository, built across units 5 to 8, telling the whole story of your real
-contribution. Fill it as you work, not at the end â€” the sections below ask for evidence that
+contribution. Fill it as you work, not at the end; the sections below ask for evidence that
 is far easier to write down as it happens than to reconstruct in the last weekend.
 
 Contribution Number stays `[1]` unless you make more than one contribution this term; it
@@ -66,10 +66,9 @@ one in the week it belongs to.
 
 (2026-11-01 to 11-03) The full suite failed 46 times on clean main on Windows, so my manifest gates on lint, format and the adapter, registry and count tests, and leaves the full suite to a Linux Codespace with the reason recorded. On my branch the gate's first two runs stopped on a registry test that passed in my agent's shell: my PowerShell had no `PYTHONIOENCODING`, so the test's child process wrote cp1252 into a pipe its UTF-8 parent couldn't read, and since it fails on main too, I set the encoding in the manifest row instead of dropping the test. The third run got past the repo checks, and my pr-precheck rightly rejected the missing BM25 and Docker evidence, so I recorded opening a draft first as a dated deviation in my plan. The draft then went up with no gate at all, because the installer had written the hook as `python3`, which Windows doesn't have; I fixed it to `python -X utf8` and confirmed it now stops a test command.
 
-**Unit 8: [one line on the tool work]**
+**Unit 8: Installed the PR-monitor, a headless runner that reads my PR's live state and drafts my next move from a playbook I wrote**
 
-[2-4 sentences: the PR-monitor and your playbook. What it read, what it
-drafted, what you did with the draft.]
+(2026-11-04) I based my playbook's thresholds on the repo's measured rhythm (dolev31 first answered 10 outside PRs within 0.1 to 9 hours), so it allows no nudge while #73 is a draft and 7 days of quiet once it is ready. The free `--state` read showed CI green and a quiet thread, but the first full run read something I hadn't noticed: #73 now conflicted with main, because four upstream commits had landed after I branched. It drafted a rebase plan with no comment to post, and I followed it with a backup branch: only CHANGELOG.md conflicted (0.2.1 had been re-dated), I re-ran the manifest checks (164 passed) and the revert check on the rebased tree, and force-pushed to my fork. The plan also told me something I would have missed: the suite numbers in my PR were measured on the old base, so they have to be re-run on the new one or labelled as old.
 
 ---
 
@@ -203,24 +202,24 @@ Deviation (2026-11-03): I open the pull request as a draft before the sample run
 
 ## Testing Strategy
 
-[What observable checks prove the fix: your reproduction steps re-run
-against the built change (before and after), and the repo's own test
-suite or checks with the outcome shown. "Tests pass" with nothing
-observable named is not a strategy.]
+**Before and after.** On main, `lasagna benchmark list` ends with "32 benchmarks, plus smoke" and `lasagna benchmark run miracl/sw --profile speed` exits 1 with `Unknown benchmark 'miracl/sw'`. On the branch, the list shows `miracl/sw` and ends with "33 benchmarks, plus smoke", `lasagna benchmark info miracl/sw` shows 482 queries, 131,924 documents, Apache-2.0, arXiv 2210.09984 and splits dev and train, and the default `--split test` is refused with "use --split dev".
+
+**A test that fails without the change.** `tests/test_miracl.py` has 13 offline tests (a small TSV and `.jsonl.gz` fixture behind a monkeypatched `hf_hub_download`). With only the `register_miracl(registry)` line removed, `test_registered_metadata_needs_no_download` fails with a `KeyError`; restored, all 13 pass. I repeated this after rebasing onto the new main.
+
+**The repo's own checks.** My manifest runs `ruff check .`, `ruff format --check .` and the adapter, registry and count tests (164 passed, 2 skipped on Windows). The full suite runs on Linux in a Codespace, since 46 tests fail on clean main on Windows: main @ `4984d5b` gave 5,930 passed and 2 failed; the branch gave 5,943 passed (13 more, the new tests) and the same 2 failed. Those two fail on main without my change: the Docling PDF test can't load a model the offline suite never downloaded, and the serve-store test's `assert None == 'http://127.0.0.1:8765'` I haven't traced.
+
+**What proves it against the paper (pending as of 2026-11-04).** BM25 on all 482 dev queries against all 131,924 passages, `n_runs: 1`, seed 42, one passage per chunk, run inside the Docker Compose stack built from the branch, beside the paper's 0.383 nDCG@10 and 0.701 Recall@100 (arXiv 2210.09984v1, Table 2, p. 5). Two extra arms, no stemming and lasagna's default parameters, measure how much of any gap comes from lasagna's ASCII tokenizer and English stemmer rather than the adapter; a large gap in every arm would point at the qrels mapping. A sample run (`-n 100 --split dev`) and one real query with its top five come from the same run. The first attempt stopped when the Codespace went idle, so it now runs in the background with a log.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: my ship-gate manifest for the Windows checks, a GitHub Codespace for the full Linux suite and the Docker stack, and lasagna's own `--dry-run` to validate the sweep file before spending hours on it
+- What it produced: before/after CLI output, the revert check, 164 passing manifest tests, Linux suite numbers for main and the branch, and a sweep the dry run confirmed (4 arms, 482 dev queries)
+- Difficulties: the Codespace said "no tests collected" until I found the dev container's CUDA torchvision; my first host run died silently when the Codespace idled out, because `| tail` printed nothing until the end; and two baseline failures had to be traced, not just labelled "fails on main"
+- What changed: the torchvision fix (reported for the maintainer's dev-container thread), runs under `nohup` with a log file, the evidence moved into the stack where CONTRIBUTING wants it, and each failure reason written into the PR
 
 ---
 
 ## Implementation Notes
-
-[A running log, added to as you work. Date each entry. What you
-built, decisions you made when you made them, wrong turns included.]
 
 **2026-11-01**
 
@@ -234,12 +233,16 @@ Ran the data check I promised on the issue before writing the adapter. At the pi
 
 The maintainer answered within half an hour: two constants, `TOPICS_REVISION` and `CORPUS_REVISION`, and one `hf_revision` string naming both commits, with a test that it is built from them. Before branching I found upstream main 12 commits ahead (0.2.1). #54 had added a test that checks every stated benchmark count against the code, including a row per benchmark in the SDK catalog, so I synced and re-planned the count step. On the first real Codespace the suite reported "no tests collected": the dev container installs CPU-only torch but a CUDA build of torchvision, so `sentence_transformers` failed to import and `tests/conftest.py` skipped every file. Reinstalling torchvision from the CPU index fixed it (5,930 passed, 2 failed on main). Then I built the branch `feat/3-miracl-sw` in three commits: the adapter, registration and 13 offline tests; the count (32 to 33 in six places, plus the README's dataset list and the SDK catalog rows); and the CHANGELOG line. Removing only the registration line made the registry test fail, and restoring it made all 13 pass. I also learned that `lasagna benchmark run` passes `--split test` by default, which Swahili doesn't have, so the adapter refuses it with a message that names `--split dev`. The paper's Swahili BM25 is nDCG@10 0.383 (arXiv 2210.09984v1, Table 2, p. 5), but lasagna's BM25 tokenizes ASCII words and stems them as English, so my sweep adds arms without stemming and with lasagna's defaults to measure that gap rather than guess at it.
 
+**2026-11-04**
+
+Opened #73 as a draft on the maintainer's invitation, with the sample run, the BM25 table and the Docker run marked pending. My PR-monitor's first run then showed #73 conflicting with main: four upstream commits had landed, including #78, which now asks a PR's "Why" to say how you searched for other instances. I rebased onto `7574477` with a backup branch; only CHANGELOG.md conflicted, because 0.2.1 had been re-dated to Nov 4, so I kept my Unreleased entry under their date. The count was still 32 upstream, so 33 stays right. The manifest checks passed again (164), the revert check held on the rebased tree, and I force-pushed to my fork and added a line on how I found every stated count to the PR's "Why".
+
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: Claude Code, as the agent that built the adapter and test with me, run against my plan.md and lasagna's AGENTS.md, with every commit read by me before it went up
+- What it produced: three commits (adapter + registration + 13 tests, the count in six places + catalog rows, CHANGELOG), each message saying why, plus the sweep file and the evidence and PR drafts
+- Difficulties: upstream moved twice under me (12 commits before I branched, 4 after the PR opened), and both times a count rule or a CHANGELOG date changed what my change had to touch; my agent's shell set `PYTHONIOENCODING`, which hid a Windows failure that only showed up in my own terminal
+- What changed: I sync with upstream before every step that reads the code, keep the plan and story in step with each deviation (dated), and trust a check only after it passes in my own terminal, not just the agent's
 
 ---
 
@@ -252,6 +255,7 @@ The maintainer answered within half an hour: two constants, `TOPICS_REVISION` an
 **Maintainer Feedback:**
 
 - 2026-11-03: none yet on the PR. On the issue, before the PR, the maintainer designed the two-revision `hf_revision` and invited an early draft, and the PR follows both.
+- 2026-11-04: still none (CI ran green: 12 passing, 2 skipped). The branch conflicted with main after four upstream commits; I rebased it and force-pushed, with no comment needed.
 
 **Status:** Awaiting review (a draft; it gets marked ready once the stack evidence is in)
 
@@ -268,26 +272,33 @@ The maintainer answered within half an hour: two constants, `TOPICS_REVISION` an
 
 **Technical Skills Gained**
 
-[What you learned technically, named concretely.]
+- Writing a benchmark adapter: lasagna's `BaseBenchmarkAdapter` contract (`info`, `load`, `load_corpus`), registration, and how the run path uses `expected_docs` and checks qrels IDs against the corpus.
+- Reading MIRACL's raw files directly at pinned Hugging Face commits with `hf_hub_download` (TSV topics and qrels, gzipped JSONL corpus), and verifying a dataset before trusting it: every judged ID in the corpus, no duplicate or conflicting pairs.
+- What makes an IR comparison with a paper fair: the same split, all queries, one passage per chunk, the paper's BM25 parameters, and extra arms to separate tokenizer and stemmer effects from mapping bugs.
+- Offline tests with a monkeypatched download, and the revert check: a test only counts if it fails without the change.
+- Docker Compose in a Codespace, and rebasing a PR branch onto a moving upstream with a backup branch and `--force-with-lease`.
 
 **Challenges Overcome**
 
-[What was hard and how you solved it; point at the real events, the
-Toolkit blocks above are full of them.]
+- The issue was out of date before I started (31 vs 32), and upstream moved again twice; syncing and re-reading the count tests each time is what kept the count right.
+- Windows: 46 environment failures on clean main, a CLAUDE.md symlink that checks out as text, `python3` missing (which silently disabled my ship-gate hook), and a cp1252/UTF-8 mismatch that only failed in my own terminal. Each one I traced to its cause and recorded instead of skipping.
+- The dev container's CUDA torchvision made the Linux suite report "no tests collected"; the fix was reinstalling it from the CPU index.
+- My own pr-precheck rejected the PR for missing evidence. That was right, so I recorded the draft-first order as a dated deviation instead of weakening the check.
 
 **What I'd Do Differently Next Time**
 
-[Reflection on your process.]
+- Run every hook's wiring test before relying on it; I skipped the unit-7 hook test, and that is exactly how the PR opened without the gate.
+- Start the long Linux and Docker runs on day one, in the background with a log, instead of after the build.
+- Re-sync with upstream right before opening the PR, not only before branching.
+- Check my checks in my own terminal, not only in the agent's shell, since the two environments differ.
 
 ---
 
 ## Resources Used
 
-[What actually helped, not a reading list. List things this story
-already shows you using: the doc you followed to set the environment
-up, the thread that explained the bug, the person who answered you.
-One real entry beats ten plausible ones.]
-
-- [Link to documentation that helped]
-- [Discussion, issue, or post that helped]
-](https://github.com/jahnvisethjs/ai301-coursework-js)
+- [dolev31/lasagna#3](https://github.com/dolev31/lasagna/issues/3), its "Done when", and the maintainer's [reply on the two pinned revisions](https://github.com/dolev31/lasagna/issues/3#issuecomment-6597546074), which set the `hf_revision` design.
+- lasagna's `CONTRIBUTING.md` (quality bar, "Tested in the production environment") and `AGENTS.md` (the revert check, never stating unmeasured numbers).
+- `adapters/twowikimultihopqa.py` and `tests/test_twowikimultihopqa.py` (PR #24), the pattern my adapter and test follow.
+- Zhang et al., [MIRACL (arXiv 2210.09984)](https://arxiv.org/abs/2210.09984): Table 1 (p. 2) for the split sizes my data check matched, Table 2 (p. 5) for the BM25 baseline.
+- The MIRACL data on Hugging Face: [miracl/miracl](https://huggingface.co/datasets/miracl/miracl) and [miracl/miracl-corpus](https://huggingface.co/datasets/miracl/miracl-corpus).
+- `examples/reproduction/beir_tier1.yaml`, the sweep my BM25 sweep is modelled on (Lucene parameters, one document per chunk).
