@@ -1,4 +1,4 @@
-# Contribution: Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
+[# Contribution: Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
 
 Path: `beat-2-contribution/contribution-story.md`
 
@@ -302,3 +302,4 @@ Opened #73 as a draft on the maintainer's invitation, with the sample run, the B
 - Zhang et al., [MIRACL (arXiv 2210.09984)](https://arxiv.org/abs/2210.09984): Table 1 (p. 2) for the split sizes my data check matched, Table 2 (p. 5) for the BM25 baseline.
 - The MIRACL data on Hugging Face: [miracl/miracl](https://huggingface.co/datasets/miracl/miracl) and [miracl/miracl-corpus](https://huggingface.co/datasets/miracl/miracl-corpus).
 - `examples/reproduction/beir_tier1.yaml`, the sweep my BM25 sweep is modelled on (Lucene parameters, one document per chunk).
+](https://github.com/jahnvisethjs/ai301-coursework-js/tree/main)
