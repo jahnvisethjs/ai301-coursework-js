@@ -1,4 +1,4 @@
-# Contribution: Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
+[# Contribution: Benchmark adapter: MIRACL (multilingual retrieval, 18 languages)
 
 Path: `beat-2-contribution/contribution-story.md`
 
@@ -290,3 +290,4 @@ One real entry beats ten plausible ones.]
 
 - [Link to documentation that helped]
 - [Discussion, issue, or post that helped]
+](https://github.com/jahnvisethjs/ai301-coursework-js)
