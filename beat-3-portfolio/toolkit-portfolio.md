@@ -7,6 +7,7 @@ Path: `beat-3-portfolio/toolkit-portfolio.md`
 ## Featured Tools
 
 I chose issue-scout, repro-check, voice-guard, and ship-gate because each changed when my own work exposed a weakness. Together they cover finding work, checking what I can honestly claim, communicating upstream, and checking a branch before opening a PR. Their most useful results include rejecting my own drafts and exposing a hook I had trusted without testing. The record below runs through November 4, 2026.
+
 **issue-scout**
 
 **What it is, and the judgment hole I wrote:** A GitHub issue search that ranks candidates using free search fields, then grades only the top five. I wrote `search-strategy.md`: six queries tied to my interests in Python, RAG, agents, and evaluation, plus drop rules, ordering, and a two-per-repository cap. I also wrote the rubric that decides whether an issue is active, available, feasible, and open to AI-assisted contributions. Choosing the queries and defining what counts as an available issue were my judgment, rather than defaults supplied by the runner.
